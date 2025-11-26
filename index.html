@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tháp Hà Nội – Chế độ GV, HS & Hướng dẫn</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #1c2541, #3a506b, #0b132b);
+      color: #0b132b;
+    }
+    .shell {
+      width: 100%;
+      max-width: 1200px;
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.55);
+      padding: 18px 18px 20px;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    @media (min-width: 768px) {
+      .shell {
+        padding: 22px 24px 24px;
+      }
+    }
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: baseline;
+    }
+    .title {
+      font-size: 1.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      color: #111827;
+    }
+    .tagline {
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #6b7280;
+      font-weight: 500;
+    }
+    .subtitle {
+      font-size: 0.92rem;
+      color: #4b5563;
+      margin-top: 2px;
+    }
+
+    .tabs {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .tab-buttons {
+      display: inline-flex;
+      gap: 4px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      padding: 3px;
+      align-self: flex-start;
+    }
+    .tab-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: #4b5563;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+      white-space: nowrap;
+    }
+    .tab-btn span.icon {
+      font-size: 1rem;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
+      color: #f9fafb;
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+      transform: translateY(-1px);
+    }
+    .tab-btn:not(.active):hover {
+      background: #f3f4f6;
+    }
+
+    .tab-caption {
+      font-size: 0.85rem;
+      color: #6b7280;
+      line-height: 1.4;
+    }
+
+    .frames {
+      margin-top: 8px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.2);
+      background: #111827;
+      position: relative;
+    }
+    .frame {
+      width: 100%;
+      height: min(75vh, 640px);
+      border: none;
+      display: none;
+      background: transparent;
+    }
+    .frame.active {
+      display: block;
+    }
+
+    @media (max-width: 640px) {
+      .frame {
+        height: min(78vh, 560px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="header">
+      <div>
+        <h1 class="title">Tháp Hà Nội – Tower of Hanoi</h1>
+        <p class="subtitle">
+          Chọn chế độ: Giáo viên minh họa, Học sinh tự viết thuật toán, hoặc xem hướng dẫn &amp; code chuẩn.
+        </p>
+      </div>
+      <span class="tagline">Đệ quy trực quan • Tin học 11</span>
+    </header>
+
+    <section class="tabs" aria-label="Chọn chế độ mô phỏng">
+      <div class="tab-buttons" role="tablist">
+        <button
+          class="tab-btn active"
+          id="tab-teacher"
+          type="button"
+          role="tab"
+          aria-selected="true"
+          aria-controls="panel-teacher"
+        >
+          <span class="icon">👩‍🏫</span>
+          Chế độ Giáo viên
+        </button>
+        <button
+          class="tab-btn"
+          id="tab-student"
+          type="button"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-student"
+        >
+          <span class="icon">🧑‍🎓</span>
+          Chế độ Học sinh
+        </button>
+        <button
+          class="tab-btn"
+          id="tab-guide"
+          type="button"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-guide"
+        >
+          <span class="icon">📘</span>
+          Hướng dẫn &amp; Code chuẩn
+        </button>
+      </div>
+
+      <p class="tab-caption">
+        • <strong>Chế độ Giáo viên:</strong> mô phỏng đầy đủ Tháp Hà Nội với auto-solve, gợi ý và bảng kiến thức đệ quy (file <code>hanoi.html</code>).<br />
+        • <strong>Chế độ Học sinh:</strong> học sinh tự viết hàm <code>hanoi(n, from, to, aux, move)</code> và xem minh họa theo thuật toán của mình (file <code>hanoihs.html</code>).<br />
+        • <strong>Hướng dẫn:</strong> giáo viên cho học sinh xem thuật toán chuẩn và mở lại mô phỏng (file <code>huongdan.html</code>).
+      </p>
+
+      <div class="frames">
+        <!-- IFRAME GV -->
+        <iframe
+          src="hanoi.html"
+          id="panel-teacher"
+          class="frame active"
+          title="Mô phỏng Tháp Hà Nội – chế độ Giáo viên"
+        ></iframe>
+
+        <!-- IFRAME HS -->
+        <iframe
+          src="hanoihs.html"
+          id="panel-student"
+          class="frame"
+          title="Mô phỏng Tháp Hà Nội – chế độ Học sinh"
+        ></iframe>
+
+        <!-- IFRAME HƯỚNG DẪN -->
+        <iframe
+          src="huongdan.html"
+          id="panel-guide"
+          class="frame"
+          title="Hướng dẫn &amp; thuật toán chuẩn Tháp Hà Nội"
+        ></iframe>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const tabTeacher = document.getElementById("tab-teacher");
+    const tabStudent = document.getElementById("tab-student");
+    const tabGuide = document.getElementById("tab-guide");
+
+    const frameTeacher = document.getElementById("panel-teacher");
+    const frameStudent = document.getElementById("panel-student");
+    const frameGuide = document.getElementById("panel-guide");
+
+    function activateTab(type) {
+      const isTeacher = type === "teacher";
+      const isStudent = type === "student";
+      const isGuide = type === "guide";
+
+      // Toggle active class on buttons
+      tabTeacher.classList.toggle("active", isTeacher);
+      tabStudent.classList.toggle("active", isStudent);
+      tabGuide.classList.toggle("active", isGuide);
+
+      tabTeacher.setAttribute("aria-selected", isTeacher ? "true" : "false");
+      tabStudent.setAttribute("aria-selected", isStudent ? "true" : "false");
+      tabGuide.setAttribute("aria-selected", isGuide ? "true" : "false");
+
+      // Toggle frames
+      frameTeacher.classList.toggle("active", isTeacher);
+      frameStudent.classList.toggle("active", isStudent);
+      frameGuide.classList.toggle("active", isGuide);
+    }
+
+    tabTeacher.addEventListener("click", () => activateTab("teacher"));
+    tabStudent.addEventListener("click", () => activateTab("student"));
+    tabGuide.addEventListener("click", () => activateTab("guide"));
+  </script>
+</body>
+</html>

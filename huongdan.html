@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Hướng dẫn – Thuật toán Tháp Hà Nội</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, sans-serif;
+      background: linear-gradient(135deg, #1c2541, #3a506b, #0b132b);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #f1f5f9;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 900px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 18px;
+      backdrop-filter: blur(10px);
+      padding: 24px;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.5);
+    }
+
+    h1 {
+      margin-bottom: 4px;
+      font-size: 1.5rem;
+    }
+
+    p.subtitle {
+      opacity: .8;
+      margin-bottom: 18px;
+    }
+
+    pre {
+      background: rgba(255,255,255,0.1);
+      padding: 16px;
+      border-radius: 12px;
+      overflow: auto;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      border-left: 4px solid #38bdf8;
+      white-space: pre-wrap;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: .2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-copy {
+      background: #38bdf8;
+      color: #0f172a;
+    }
+    .btn-copy:hover {
+      background: #0ea5e9;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Thuật toán chuẩn – Tháp Hà Nội</h1>
+  <p class="subtitle">Giáo viên có thể đưa học sinh xem đoạn code đúng của thuật toán đệ quy.</p>
+
+  <pre id="codeBlock">
+// Thuật toán đệ quy chuẩn Tháp Hà Nội
+function hanoi(n, from, to, aux, move) {
+  if (n === 1) {
+    move(from, to);   // chuyển 1 đĩa
+    return;
+  }
+
+  // 1. Chuyển n - 1 đĩa từ cọc nguồn sang cọc trung gian
+  hanoi(n - 1, from, aux, to, move);
+
+  // 2. Chuyển đĩa lớn nhất
+  move(from, to);
+
+  // 3. Chuyển n - 1 đĩa từ cọc trung gian sang cọc đích
+  hanoi(n - 1, aux, to, from, move);
+}
+  </pre>
+
+  <div class="btn-row">
+    <button class="btn btn-copy" onclick="copyCode()">
+      📋 Chép code đúng cho học sinh
+    </button>
+  </div>
+</div>
+
+<script>
+  function copyCode() {
+    const code = document.getElementById("codeBlock").innerText;
+    navigator.clipboard.writeText(code).then(() => {
+      alert("Đã sao chép thuật toán chuẩn!");
+    });
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tháp Hà Nội – Tower of Hanoi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    /* ====== GLOBAL ====== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #1c2541, #3a506b, #0b132b);
+      color: #0b132b;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 1100px;
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 18px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      padding: 20px 20px 24px;
+      backdrop-filter: blur(10px);
+    }
+
+    @media (min-width: 768px) {
+      .app-shell {
+        padding: 24px 28px 28px;
+      }
+    }
+
+    /* ====== HEADER ====== */
+    .header {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .title-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    .title-row h1 {
+      font-size: 1.4rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #172a3a;
+    }
+
+    .title-tagline {
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #7589a2;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #4f5d75;
+      max-width: 640px;
+      line-height: 1.4;
+    }
+
+    /* ====== LAYOUT ====== */
+    .layout {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    @media (min-width: 900px) {
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.3fr);
+        gap: 22px;
+        align-items: flex-start;
+      }
+    }
+
+    /* ====== GAME CARD ====== */
+    .game-card {
+      background: #edf2f4;
+      border-radius: 16px;
+      padding: 16px 14px 18px;
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    @media (min-width: 768px) {
+      .game-card {
+        padding: 16px 18px 20px;
+      }
+    }
+
+    .game-top-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .controls-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .controls-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #344966;
+    }
+
+    .controls-group select {
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      font-size: 0.85rem;
+      outline: none;
+      min-width: 70px;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      position: relative;
+      border: none;
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease, color 0.15s ease;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+      white-space: nowrap;
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1b5f8c, #1088a3);
+      color: #f9fafb;
+    }
+
+    .btn-secondary {
+      background: #f8fafc;
+      color: #1e293b;
+      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.14);
+    }
+
+    .btn-tertiary {
+      background: #e2e8f0;
+      color: #0f172a;
+      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.12);
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 22px rgba(15, 23, 42, 0.26);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.2);
+    }
+
+    .btn-pill-icon {
+      font-size: 1rem;
+    }
+
+    /* ====== STATUS BAR ====== */
+    .status-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 1px 0 rgba(148, 163, 184, 0.4);
+    }
+
+    .status-left,
+    .status-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 4px;
+      background: #e0f2fe;
+      color: #075985;
+    }
+
+    .badge span.value {
+      font-weight: 700;
+      font-feature-settings: "tnum" 1, "lnum" 1;
+    }
+
+    .badge-muted {
+      background: #f1f5f9;
+      color: #334155;
+    }
+
+    .status-message {
+      font-size: 0.8rem;
+      color: #475569;
+      max-width: 320px;
+    }
+
+    /* ====== TOWERS AREA ====== */
+    .towers-wrapper {
+      margin-top: 12px;
+      padding: 10px 8px 12px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #dbeafe, #e2e8f0);
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.3);
+    }
+
+    .towers-label-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 12px 4px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .towers {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 10px;
+      min-height: 220px;
+    }
+
+    @media (min-width: 768px) {
+      .towers {
+        min-height: 260px;
+      }
+    }
+
+    .peg {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 4px 26px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      border-radius: 10px;
+    }
+
+    .peg::before {
+      /* rod */
+      content: "";
+      position: absolute;
+      bottom: 26px;
+      width: 6px;
+      height: 70%;
+      max-height: 190px;
+      border-radius: 999px;
+      background: linear-gradient(to bottom, #94a3b8, #64748b);
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.16);
+    }
+
+    .peg::after {
+      /* base */
+      content: "";
+      position: absolute;
+      bottom: 14px;
+      width: 88%;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(to right, #0f172a, #111827);
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.6);
+    }
+
+    .peg:hover {
+      background: rgba(148, 163, 184, 0.18);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .peg.selected {
+      background: rgba(56, 189, 248, 0.22);
+      box-shadow: 0 10px 22px rgba(56, 189, 248, 0.5);
+    }
+
+    .peg.hint {
+      box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.8), 0 10px 20px rgba(251, 191, 36, 0.4);
+    }
+
+    .peg-name {
+      position: absolute;
+      bottom: 2px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .discs {
+      position: relative;
+      width: 100%;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      gap: 3px;
+      z-index: 2;
+    }
+
+    .disc {
+      height: 20px;
+      border-radius: 999px;
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #0f172a;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    }
+
+    .disc::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(circle at 30% 10%, rgba(255, 255, 255, 0.35), transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .disc.moving {
+      transform: translateY(-12px);
+      box-shadow: 0 12px 25px rgba(15, 23, 42, 0.4);
+    }
+
+    .disc-label {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ====== KNOWLEDGE PANEL ====== */
+    .knowledge-card {
+      background: #0b132b;
+      color: #e5e7eb;
+      border-radius: 16px;
+      padding: 14px 14px 16px;
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7);
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (min-width: 768px) {
+      .knowledge-card {
+        padding: 16px 18px 18px;
+      }
+    }
+
+    .knowledge-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(96, 165, 250, 0.16), transparent 55%),
+        radial-gradient(circle at 120% 10%, rgba(56, 189, 248, 0.22), transparent 50%),
+        radial-gradient(circle at 50% 120%, rgba(52, 211, 153, 0.18), transparent 55%);
+      opacity: 1;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .knowledge-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .knowledge-title {
+      font-size: 1.02rem;
+      font-weight: 650;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .knowledge-pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .knowledge-subtitle {
+      font-size: 0.82rem;
+      color: #cbd5f5;
+      margin-bottom: 8px;
+    }
+
+    .knowledge-section {
+      border-radius: 10px;
+      padding: 8px 9px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      margin-bottom: 7px;
+    }
+
+    .knowledge-section h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #bfdbfe;
+      margin-bottom: 4px;
+    }
+
+    .knowledge-section p,
+    .knowledge-section li {
+      font-size: 0.8rem;
+      line-height: 1.4;
+      color: #e5e7eb;
+    }
+
+    .knowledge-section ul {
+      margin-left: 16px;
+      margin-top: 2px;
+      list-style: disc;
+    }
+
+    .formula {
+      font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      background: rgba(15, 23, 42, 0.85);
+      padding: 4px 7px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      margin-top: 4px;
+      border: 1px solid rgba(129, 140, 248, 0.7);
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.85);
+    }
+
+    .formula span {
+      color: #e5e7eb;
+    }
+
+    .formula .highlight {
+      color: #fde68a;
+    }
+
+    /* ====== WIN OVERLAY ====== */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.88));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 40;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .overlay-card {
+      max-width: 420px;
+      width: 100%;
+      background: radial-gradient(circle at top, #1f2937, #020617);
+      border-radius: 18px;
+      padding: 20px 18px 18px;
+      box-shadow:
+        0 22px 45px rgba(0, 0, 0, 0.9),
+        0 0 0 1px rgba(148, 163, 184, 0.5);
+      text-align: center;
+      color: #e5e7eb;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .overlay-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(251, 191, 36, 0.15), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.18), transparent 55%);
+      opacity: 1;
+      pointer-events: none;
+    }
+
+    .overlay-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .overlay-icon {
+      font-size: 2.3rem;
+      margin-bottom: 6px;
+      animation: pop 0.55s ease-out;
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(0.4);
+        opacity: 0;
+      }
+      60% {
+        transform: scale(1.15);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .overlay-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .overlay-text {
+      font-size: 0.9rem;
+      color: #e5e7eb;
+      margin-bottom: 10px;
+    }
+
+    .overlay-metrics {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .overlay-metric {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .overlay-metric span.value {
+      font-weight: 700;
+      color: #e5e7eb;
+    }
+
+    .overlay-actions {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .overlay-btn {
+      border-radius: 999px;
+      border: none;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease, color 0.15s ease;
+    }
+
+    .overlay-btn-primary {
+      background: linear-gradient(135deg, #22c55e, #84cc16);
+      color: #022c22;
+      box-shadow: 0 10px 20px rgba(34, 197, 94, 0.45);
+    }
+
+    .overlay-btn-secondary {
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+    }
+
+    .overlay-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.8);
+    }
+
+    .overlay-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.75);
+    }
+
+    /* ====== UTILS ====== */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="header">
+      <div class="title-row">
+        <h1>Tháp Hà Nội – Tower of Hanoi</h1>
+        <span class="title-tagline">Đệ quy trực quan • Tin học 11</span>
+      </div>
+      <p class="subtitle">
+        Luật chơi: Di chuyển toàn bộ chồng đĩa từ cọc <strong>A</strong> sang cọc
+        <strong>C</strong>, mỗi lần chỉ được di chuyển <strong>1 đĩa</strong> và
+        <strong>không được đặt đĩa lớn lên trên đĩa nhỏ</strong>.
+      </p>
+    </header>
+
+    <section class="layout" aria-label="Mô phỏng trò chơi Tháp Hà Nội và kiến thức đệ quy">
+      <!-- GAME AREA -->
+      <section class="game-card" aria-label="Khu vực trò chơi Tháp Hà Nội">
+        <div class="game-top-row">
+          <div class="controls-group">
+            <label for="diskCountSelect">Số đĩa:</label>
+            <select id="diskCountSelect">
+              <option value="3">3 đĩa (dễ)</option>
+              <option value="4">4 đĩa</option>
+              <option value="5" selected>5 đĩa</option>
+              <option value="6">6 đĩa</option>
+              <option value="7">7 đĩa (khó)</option>
+            </select>
+          </div>
+
+          <div class="btn-row">
+            <button id="newGameBtn" class="btn btn-secondary" type="button">
+              <span class="btn-pill-icon">🔁</span>
+              Chơi mới
+            </button>
+            <button id="autoSolveBtn" class="btn btn-primary" type="button">
+              <span class="btn-pill-icon">🤖</span>
+              Tự động giải
+            </button>
+            <button id="hintBtn" class="btn btn-tertiary" type="button">
+              <span class="btn-pill-icon">💡</span>
+              Gợi ý
+            </button>
+          </div>
+        </div>
+
+        <div class="status-bar" aria-live="polite">
+          <div class="status-left">
+            <div class="badge">
+              Lượt đi:
+              <span id="moveCount" class="value">0</span>
+            </div>
+            <div class="badge badge-muted">
+              Tối thiểu:
+              <span id="minMoves" class="value">0</span>
+              bước
+            </div>
+          </div>
+          <div class="status-right">
+            <p id="statusMessage" class="status-message">
+              Nhấp chọn một cọc nguồn, sau đó nhấp cọc đích để di chuyển đĩa.
+            </p>
+          </div>
+        </div>
+
+        <div class="towers-wrapper">
+          <div class="towers-label-row" aria-hidden="true">
+            <span>Cọc A</span>
+            <span>Cọc B</span>
+            <span>Cọc C</span>
+          </div>
+          <div class="towers" role="group" aria-label="Các cọc Tháp Hà Nội">
+            <div class="peg" id="peg-A" data-peg="A" tabindex="0" aria-label="Cọc A">
+              <div class="discs" id="discs-A"></div>
+              <span class="peg-name">A</span>
+            </div>
+            <div class="peg" id="peg-B" data-peg="B" tabindex="0" aria-label="Cọc B">
+              <div class="discs" id="discs-B"></div>
+              <span class="peg-name">B</span>
+            </div>
+            <div class="peg" id="peg-C" data-peg="C" tabindex="0" aria-label="Cọc C">
+              <div class="discs" id="discs-C"></div>
+              <span class="peg-name">C</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- KNOWLEDGE AREA -->
+      <aside class="knowledge-card" aria-label="Bảng kiến thức đệ quy cho Tháp Hà Nội">
+        <div class="knowledge-inner">
+          <div class="knowledge-title">
+            GÓC KIẾN THỨC ĐỆ QUY
+            <span class="knowledge-pill">RECURSION NOTES</span>
+          </div>
+          <p class="knowledge-subtitle">
+            Liên hệ trực tiếp giữa trò chơi và hàm đệ quy giải Tháp Hà Nội.
+          </p>
+
+          <div class="knowledge-section">
+            <h3>1. Base case (Trường hợp cơ sở)</h3>
+            <p>
+              Khi chỉ còn <strong>1 đĩa</strong>, bài toán rất đơn giản:
+              <strong>chỉ cần di chuyển 1 đĩa từ cọc nguồn sang cọc đích</strong>.
+            </p>
+            <p>
+              Trong code: <em>n == 1 &rarr; thực hiện 1 bước di chuyển rồi dừng lại</em>.
+            </p>
+          </div>
+
+          <div class="knowledge-section">
+            <h3>2. Recursive case (Trường hợp đệ quy)</h3>
+            <p>Khi <strong>n &gt; 1</strong>, ta tách bài toán thành 3 bước:</p>
+            <ul>
+              <li>1️⃣ Di chuyển <strong>n - 1</strong> đĩa trên cùng từ <strong>cọc nguồn</strong> sang <strong>cọc trung gian</strong>.</li>
+              <li>2️⃣ Di chuyển <strong>đĩa lớn nhất</strong> còn lại từ <strong>cọc nguồn</strong> sang <strong>cọc đích</strong>.</li>
+              <li>3️⃣ Di chuyển <strong>n - 1</strong> đĩa từ <strong>cọc trung gian</strong> sang <strong>cọc đích</strong>.</li>
+            </ul>
+          </div>
+
+          <div class="knowledge-section">
+            <h3>3. Chiến lược 3 bước (thuật toán)</h3>
+            <p>Hàm đệ quy tổng quát có dạng:</p>
+            <ul>
+              <li>Hanoi(n, from, to, aux)</li>
+              <li>Nếu n == 1: di chuyển 1 đĩa từ from → to.</li>
+              <li>Nếu n &gt; 1: gọi lại chính nó 3 lần theo 3 bước ở trên.</li>
+            </ul>
+          </div>
+
+          <div class="knowledge-section">
+            <h3>4. Số bước tối thiểu</h3>
+            <p>
+              Để chuyển <strong>n đĩa</strong> một cách tối ưu, cần số bước:
+            </p>
+            <div class="formula">
+              <span>T(n) =</span>
+              <span class="highlight">2ⁿ − 1</span>
+              <span>bước</span>
+            </div>
+            <p style="margin-top: 5px;">
+              Ví dụ: 3 đĩa → <strong>7 bước</strong>, 4 đĩa → <strong>15 bước</strong>.
+            </p>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- WIN OVERLAY -->
+  <div id="winOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+    <div class="overlay-card">
+      <div class="overlay-inner">
+        <div class="overlay-icon">🎉</div>
+        <h2 id="winTitle" class="overlay-title">Hoàn thành Tháp Hà Nội!</h2>
+        <p id="winText" class="overlay-text">
+          Chúc mừng bạn đã chuyển toàn bộ đĩa sang cọc C theo đúng luật!
+        </p>
+        <div class="overlay-metrics">
+          <div class="overlay-metric">
+            <span>🎯 Lượt đi:</span>
+            <span id="winMoves" class="value">0</span>
+          </div>
+          <div class="overlay-metric">
+            <span>📐 Tối thiểu:</span>
+            <span id="winMinMoves" class="value">0</span>
+          </div>
+        </div>
+        <div class="overlay-actions">
+          <button id="winPlayAgainBtn" class="overlay-btn overlay-btn-primary" type="button">
+            <span>Chơi lại</span> 🔁
+          </button>
+          <button id="winCloseBtn" class="overlay-btn overlay-btn-secondary" type="button">
+            <span>Đóng</span> ✖
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================
+    // TRẠNG THÁI TOÀN CỤC
+    // ==========================
+    let towers = {
+      A: [],
+      B: [],
+      C: [],
+    };
+
+    let totalDisks = 5;
+    let moveCount = 0;
+    let minMoves = 0;
+
+    let selectedPeg = null;
+    let isAutoSolving = false;
+    let autoMoves = [];
+    let autoIndex = 0;
+    let autoTimer = null;
+
+    // ==========================
+    // TRUY CẬP DOM
+    // ==========================
+    const diskSelect = document.getElementById("diskCountSelect");
+    const newGameBtn = document.getElementById("newGameBtn");
+    const autoSolveBtn = document.getElementById("autoSolveBtn");
+    const hintBtn = document.getElementById("hintBtn");
+
+    const moveCountSpan = document.getElementById("moveCount");
+    const minMovesSpan = document.getElementById("minMoves");
+    const statusMessage = document.getElementById("statusMessage");
+
+    const pegElements = {
+      A: document.getElementById("peg-A"),
+      B: document.getElementById("peg-B"),
+      C: document.getElementById("peg-C"),
+    };
+
+    const discsContainers = {
+      A: document.getElementById("discs-A"),
+      B: document.getElementById("discs-B"),
+      C: document.getElementById("discs-C"),
+    };
+
+    const winOverlay = document.getElementById("winOverlay");
+    const winMovesSpan = document.getElementById("winMoves");
+    const winMinMovesSpan = document.getElementById("winMinMoves");
+    const winPlayAgainBtn = document.getElementById("winPlayAgainBtn");
+    const winCloseBtn = document.getElementById("winCloseBtn");
+
+    // Màu cho đĩa (vòng từ đầu mảng nếu cần)
+    const discColors = [
+      "#38bdf8",
+      "#a855f7",
+      "#fb923c",
+      "#22c55e",
+      "#eab308",
+      "#f97373",
+      "#4ade80",
+    ];
+
+    // ==========================
+    // HÀM GHI ĐỆ QUY SINH DANH SÁCH BƯỚC ĐI
+    // (recursive generate – dùng để auto-solve & gợi ý)
+    // ==========================
+    function generateRecursiveMoves(n, from, to, aux, moves) {
+      // Base case: chỉ còn 1 đĩa → di chuyển trực tiếp
+      if (n === 1) {
+        moves.push({ from, to });
+        return;
+      }
+
+      // Recursive case: tách thành 3 bước kinh điển
+      generateRecursiveMoves(n - 1, from, aux, to, moves); // Bước 1
+      moves.push({ from, to }); // Bước 2
+      generateRecursiveMoves(n - 1, aux, to, from, moves); // Bước 3
+    }
+
+    // Dùng hàm đệ quy để sinh toàn bộ lời giải tối ưu từ trạng thái ban đầu
+    function buildSolution() {
+      autoMoves = [];
+      generateRecursiveMoves(totalDisks, "A", "C", "B", autoMoves);
+      minMoves = Math.pow(2, totalDisks) - 1;
+      minMovesSpan.textContent = minMoves;
+    }
+
+    // ==========================
+    // KHỞI TẠO / RESET TRÒ CHƠI
+    // ==========================
+    function initGame() {
+      stopAutoSolve(true);
+
+      totalDisks = parseInt(diskSelect.value, 10);
+      towers = { A: [], B: [], C: [] };
+
+      // Đặt n đĩa lên cọc A (đĩa lớn ở dưới)
+      for (let i = totalDisks; i >= 1; i--) {
+        towers.A.push(i);
+      }
+
+      moveCount = 0;
+      updateMoveCount();
+      buildSolution();
+      renderTowers();
+      clearSelection();
+      setStatus(
+        "Nhấp cọc A, B hoặc C để chọn cọc nguồn, sau đó nhấp cọc đích để di chuyển đĩa."
+      );
+      hideWinOverlay();
+    }
+
+    function updateMoveCount() {
+      moveCountSpan.textContent = moveCount;
+    }
+
+    function setStatus(msg) {
+      statusMessage.textContent = msg;
+    }
+
+    // ==========================
+    // VẼ LẠI CÁC CỌC & ĐĨA TRÊN DOM
+    // ==========================
+    function renderTowers() {
+      ["A", "B", "C"].forEach((pegId) => {
+        const container = discsContainers[pegId];
+        container.innerHTML = "";
+
+        const pegDisks = towers[pegId];
+
+        pegDisks.forEach((discSize) => {
+          const discEl = document.createElement("div");
+          discEl.className = "disc";
+
+          const widthPercent =
+            38 + ((discSize - 1) / Math.max(1, totalDisks - 1)) * 48;
+          discEl.style.width = widthPercent + "%";
+
+          const color = discColors[(discSize - 1) % discColors.length];
+          discEl.style.background = `linear-gradient(135deg, ${color}, #0f172a)`;
+
+          const label = document.createElement("span");
+          label.className = "disc-label";
+          label.textContent = discSize;
+          discEl.appendChild(label);
+
+          container.appendChild(discEl);
+        });
+      });
+    }
+
+    // Tạo hiệu ứng khi đĩa di chuyển
+    function animateLastDisc(pegId) {
+      const container = discsContainers[pegId];
+      const lastDisc = container.lastElementChild;
+      if (!lastDisc) return;
+      lastDisc.classList.add("moving");
+      setTimeout(() => {
+        lastDisc.classList.remove("moving");
+      }, 250);
+    }
+
+    // ==========================
+    // XỬ LÝ CHỌN CỌC & DI CHUYỂN ĐĨA
+    // ==========================
+    function handlePegClick(pegId) {
+      if (isAutoSolving) return;
+
+      if (!selectedPeg) {
+        // Chọn cọc nguồn
+        if (towers[pegId].length === 0) {
+          setStatus("Cọc này không có đĩa để di chuyển. Hãy chọn cọc khác.");
+          return;
+        }
+        selectedPeg = pegId;
+        updateSelectionHighlight();
+        setStatus("Chọn cọc đích để di chuyển đĩa.");
+      } else {
+        // Đang chọn cọc nguồn → chọn cọc đích
+        if (selectedPeg === pegId) {
+          // Bấm lại cùng cọc → hủy
+          clearSelection();
+          setStatus("Đã hủy lựa chọn cọc nguồn.");
+          return;
+        }
+        const moved = moveDisc(selectedPeg, pegId, false);
+        clearSelection();
+        if (moved) {
+          setStatus(`Đã di chuyển 1 đĩa từ cọc ${selectedPeg} sang cọc ${pegId}.`);
+        }
+      }
+    }
+
+    function moveDisc(fromPeg, toPeg, isAuto) {
+      const fromStack = towers[fromPeg];
+      const toStack = towers[toPeg];
+
+      if (fromStack.length === 0) {
+        setStatus("Cọc nguồn không có đĩa.");
+        return false;
+      }
+
+      const disc = fromStack[fromStack.length - 1];
+      const destTop = toStack[toStack.length - 1];
+
+      // Kiểm tra vi phạm luật (đĩa lớn đặt lên đĩa nhỏ)
+      if (destTop !== undefined && destTop < disc) {
+        setStatus("Lỗi: Không được đặt đĩa lớn lên trên đĩa nhỏ.");
+        return false;
+      }
+
+      fromStack.pop();
+      toStack.push(disc);
+
+      if (!isAuto) {
+        moveCount++;
+        updateMoveCount();
+      }
+
+      renderTowers();
+      animateLastDisc(toPeg);
+      if (!isAuto) {
+    checkWinCondition();
+  }
+      return true;
+    }
+
+    function clearSelection() {
+      selectedPeg = null;
+      updateSelectionHighlight();
+    }
+
+    function updateSelectionHighlight() {
+      ["A", "B", "C"].forEach((pegId) => {
+        pegElements[pegId].classList.toggle(
+          "selected",
+          selectedPeg === pegId
+        );
+      });
+    }
+
+    // ==========================
+    // KIỂM TRA THẮNG
+    // ==========================
+    function checkWinCondition() {
+      if (towers.C.length === totalDisks) {
+        showWinOverlay();
+      }
+    }
+
+    function showWinOverlay() {
+      winMovesSpan.textContent = moveCount;
+      winMinMovesSpan.textContent = minMoves;
+      winOverlay.classList.add("visible");
+    }
+
+    function hideWinOverlay() {
+      winOverlay.classList.remove("visible");
+    }
+
+    // ==========================
+    // AUTO-SOLVE (DÙNG DANH SÁCH BƯỚC ĐỆ QUY)
+    // ==========================
+    function startAutoSolve() {
+  if (isAutoSolving) return;
+
+  const isInitial =
+    towers.A.length === totalDisks &&
+    towers.B.length === 0 &&
+    towers.C.length === 0 &&
+    moveCount === 0;
+
+  if (!isInitial) {
+    setStatus(
+      "Tự động giải chỉ hoạt động từ trạng thái ban đầu. Hãy bấm 'Chơi mới' trước."
+    );
+    return;
+  }
+
+  isAutoSolving = true;
+  autoIndex = 0;
+  disableManualControls(true);
+  setStatus("Đang tự động giải... Vui lòng chờ.");
+
+  // 🔹 đổi nội dung nút thành “Dừng tự động”
+  autoSolveBtn.innerHTML =
+    '<span class="btn-pill-icon">⏸</span>Dừng tự động';
+
+  const delay = 550;
+
+  autoTimer = setInterval(() => {
+    const { from, to } = autoMoves[autoIndex];
+    moveDisc(from, to, true);
+    moveCount++;
+    updateMoveCount();
+    autoIndex++;
+
+    if (autoIndex >= autoMoves.length) {
+      stopAutoSolve(false);
+      setStatus("Đã hoàn thành lời giải tự động.");
+      showWinOverlay();
+    }
+  }, delay);
+}
+
+    function stopAutoSolve(silent) {
+  if (autoTimer) {
+    clearInterval(autoTimer);
+    autoTimer = null;
+  }
+  if (isAutoSolving && !silent) {
+    setStatus("Đã dừng tự động giải.");
+  }
+  isAutoSolving = false;
+  disableManualControls(false);
+
+  // 🔹 trả nút về “Tự động giải”
+  autoSolveBtn.innerHTML =
+    '<span class="btn-pill-icon">🤖</span>Tự động giải';
+}
+
+    function disableManualControls(disable) {
+      newGameBtn.disabled = disable;
+      hintBtn.disabled = disable;
+      diskSelect.disabled = disable;
+      // Khóa click trên các cọc được xử lý trong handlePegClick (check biến isAutoSolving)
+    }
+
+    // ==========================
+    // GỢI Ý BƯỚC TIẾP THEO
+    // (dùng danh sách bước tối ưu từ trạng thái ban đầu)
+    // ==========================
+    function showHint() {
+      if (isAutoSolving) return;
+
+      const isInitialOrOptimalPath =
+        towers.B.length === 0 &&
+        towers.C.length === 0 &&
+        towers.A.length === totalDisks &&
+        moveCount === 0;
+
+      if (!isInitialOrOptimalPath) {
+        setStatus(
+          "Gợi ý chỉ chính xác khi bạn bắt đầu từ trạng thái ban đầu. Hãy bấm 'Chơi mới' nếu cần."
+        );
+        return;
+      }
+
+      const nextMove = autoMoves[moveCount];
+      if (!nextMove) {
+        setStatus("Bạn đã hoàn thành lời giải tối ưu rồi!");
+        return;
+      }
+
+      const { from, to } = nextMove;
+      setStatus(
+        `Gợi ý: Hãy di chuyển 1 đĩa từ cọc ${from} sang cọc ${to}.`
+      );
+
+      // Nháy sáng 2 cọc được gợi ý
+      highlightHintPegs(from, to);
+    }
+
+    function highlightHintPegs(fromPeg, toPeg) {
+      ["A", "B", "C"].forEach((pegId) => {
+        pegElements[pegId].classList.remove("hint");
+      });
+
+      pegElements[fromPeg].classList.add("hint");
+      pegElements[toPeg].classList.add("hint");
+
+      setTimeout(() => {
+        pegElements[fromPeg].classList.remove("hint");
+        pegElements[toPeg].classList.remove("hint");
+      }, 700);
+    }
+
+    // ==========================
+    // GÁN SỰ KIỆN
+    // ==========================
+    function setupEventListeners() {
+      ["A", "B", "C"].forEach((pegId) => {
+        const pegEl = pegElements[pegId];
+
+        pegEl.addEventListener("click", () => {
+          handlePegClick(pegId);
+        });
+
+        pegEl.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handlePegClick(pegId);
+          }
+        });
+      });
+
+      newGameBtn.addEventListener("click", () => {
+        initGame();
+      });
+
+      autoSolveBtn.addEventListener("click", () => {
+  if (isAutoSolving) {
+    // 🔹 nếu đang auto thì bấm lần nữa → dừng
+    stopAutoSolve(true);
+    setStatus(
+      "Đã dừng tự động giải. Bạn có thể tiếp tục tự di chuyển đĩa từ trạng thái hiện tại."
+    );
+  } else {
+    // 🔹 chưa chạy → bắt đầu auto
+    startAutoSolve();
+  }
+});
+
+      hintBtn.addEventListener("click", () => {
+        showHint();
+      });
+
+      diskSelect.addEventListener("change", () => {
+        initGame();
+      });
+
+      winPlayAgainBtn.addEventListener("click", () => {
+        hideWinOverlay();
+        initGame();
+      });
+
+      winCloseBtn.addEventListener("click", () => {
+        hideWinOverlay();
+      });
+
+      winOverlay.addEventListener("click", (e) => {
+        if (e.target === winOverlay) {
+          hideWinOverlay();
+        }
+      });
+    }
+
+    // ==========================
+    // KHỞI ĐỘNG
+    // ==========================
+    setupEventListeners();
+    initGame();
+  </script>
+</body>
+</html>

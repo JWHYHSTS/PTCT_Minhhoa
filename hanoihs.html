@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tháp Hà Nội – Chế độ Học sinh</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #1c2541, #3a506b, #0b132b);
+      color: #0b132b;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 1200px;
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.55);
+      padding: 18px 18px 22px;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    @media (min-width: 768px) {
+      .app-shell {
+        padding: 22px 24px 26px;
+      }
+    }
+
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: baseline;
+    }
+
+    .title {
+      font-size: 1.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .tagline {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .subtitle {
+      font-size: 0.92rem;
+      color: #4b5563;
+      margin-top: 3px;
+      max-width: 700px;
+      line-height: 1.4;
+    }
+
+    .layout {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 4px;
+    }
+
+    @media (min-width: 960px) {
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.1fr);
+        gap: 18px;
+      }
+    }
+
+    /* CODE PANEL */
+    .code-card {
+      background: #0b132b;
+      color: #e5e7eb;
+      border-radius: 16px;
+      padding: 14px 14px 16px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 16px 34px rgba(15, 23, 42, 0.8);
+    }
+
+    @media (min-width: 768px) {
+      .code-card {
+        padding: 16px 18px 18px;
+      }
+    }
+
+    .code-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.22), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.25), transparent 55%),
+        radial-gradient(circle at 50% 120%, rgba(45, 212, 191, 0.18), transparent 55%);
+      opacity: 1;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .code-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .code-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .code-title {
+      font-size: 1rem;
+      font-weight: 650;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .code-title span.icon {
+      font-size: 1.2rem;
+    }
+
+    .code-mini {
+      font-size: 0.78rem;
+      color: #cbd5f5;
+      line-height: 1.4;
+    }
+
+    .code-badge {
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .code-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .select-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      color: #e5e7eb;
+    }
+
+    .select-row select {
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid #9ca3af;
+      background: rgba(15, 23, 42, 0.92);
+      color: #e5e7eb;
+      font-size: 0.8rem;
+      outline: none;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease, color 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn span.icon {
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #22c55e, #4ade80);
+      color: #052e16;
+      box-shadow: 0 8px 18px rgba(34, 197, 94, 0.5);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(34, 197, 94, 0.7);
+    }
+
+    .btn-neutral {
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.7);
+    }
+
+    .btn-neutral:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.9);
+    }
+
+    .btn-secondary {
+      background: rgba(148, 163, 184, 0.25);
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.6);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 7px 16px rgba(15, 23, 42, 0.85);
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .code-editor-wrapper {
+      margin-top: 6px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.94);
+      border: 1px solid rgba(148, 163, 184, 0.65);
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.85);
+      overflow: hidden;
+    }
+
+    .code-editor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.35), rgba(15, 23, 42, 1));
+      font-size: 0.78rem;
+    }
+
+    .dots {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+    }
+
+    .dot.red {
+      background: #f97373;
+    }
+
+    .dot.yellow {
+      background: #facc15;
+    }
+
+    .dot.green {
+      background: #4ade80;
+    }
+
+    .code-filename {
+      color: #9ca3af;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    .code-editor {
+      width: 100%;
+      min-height: 220px;
+      max-height: 360px;
+      resize: vertical;
+      background: transparent;
+      border: none;
+      padding: 8px 10px 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.82rem;
+      color: #e5e7eb;
+      line-height: 1.4;
+      outline: none;
+      tab-size: 2;
+      white-space: pre;
+      overflow: auto;
+    }
+
+    .code-hint {
+      font-size: 0.78rem;
+      color: #d1fae5;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* GAME PANEL */
+    .game-card {
+      background: #edf2f4;
+      border-radius: 16px;
+      padding: 14px 14px 16px;
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    @media (min-width: 768px) {
+      .game-card {
+        padding: 16px 18px 18px;
+      }
+    }
+
+    .game-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .game-title {
+      font-size: 0.98rem;
+      font-weight: 650;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .game-title span.icon {
+      font-size: 1.2rem;
+    }
+
+    .status-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 0.78rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #e0f2fe;
+      color: #075985;
+    }
+
+    .badge span.value {
+      font-weight: 700;
+    }
+
+    .badge-muted {
+      background: #f1f5f9;
+      color: #334155;
+    }
+
+    .badge-warn {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .game-status {
+      font-size: 0.8rem;
+      color: #475569;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .towers-wrapper {
+      margin-top: 8px;
+      padding: 10px 8px 12px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #dbeafe, #e2e8f0);
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.3);
+    }
+
+    .towers-label-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 12px 4px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .towers {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 10px;
+      min-height: 220px;
+    }
+
+    @media (min-width: 768px) {
+      .towers {
+        min-height: 260px;
+      }
+    }
+
+    .peg {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 4px 26px;
+      border-radius: 10px;
+    }
+
+    .peg::before {
+      content: "";
+      position: absolute;
+      bottom: 26px;
+      width: 6px;
+      height: 70%;
+      max-height: 190px;
+      border-radius: 999px;
+      background: linear-gradient(to bottom, #94a3b8, #64748b);
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.16);
+    }
+
+    .peg::after {
+      content: "";
+      position: absolute;
+      bottom: 14px;
+      width: 88%;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(to right, #0f172a, #111827);
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.6);
+    }
+
+    .peg-name {
+      position: absolute;
+      bottom: 2px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .discs {
+      position: relative;
+      width: 100%;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      gap: 3px;
+      z-index: 2;
+    }
+
+    .disc {
+      height: 20px;
+      border-radius: 999px;
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #0f172a;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+      position: relative;
+    }
+
+    .disc::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(circle at 30% 10%, rgba(255, 255, 255, 0.35), transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .disc.moving {
+      transform: translateY(-12px);
+      box-shadow: 0 12px 25px rgba(15, 23, 42, 0.4);
+    }
+
+    .disc-label {
+      position: relative;
+      z-index: 1;
+    }
+
+    .game-bottom-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .evaluation-message {
+      margin-top: 4px;
+      font-size: 0.82rem;
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: #eef2ff;
+      color: #3730a3;
+      border: 1px solid #c7d2fe;
+      line-height: 1.4;
+    }
+
+    .evaluation-message.error {
+      background: #fef2f2;
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+
+    .evaluation-message.ok {
+      background: #ecfdf5;
+      color: #166534;
+      border-color: #bbf7d0;
+    }
+
+    .evaluation-message.warn {
+      background: #fffbeb;
+      color: #92400e;
+      border-color: #fcd34d;
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="header">
+      <div>
+        <h1 class="title">Tháp Hà Nội – Chế độ Học sinh</h1>
+        <p class="subtitle">
+          Hãy tự viết hàm <code>hanoi(...)</code> để giải bài toán Tháp Hà Nội.
+          Chương trình sẽ dùng đúng thuật toán của bạn để vẽ minh họa. Nếu viết sai, minh họa cũng sẽ sai.
+        </p>
+      </div>
+      <span class="tagline">TỰ LẬP TRÌNH THUẬT TOÁN • TIN HỌC 11</span>
+    </header>
+
+    <section class="layout" aria-label="Khu vực viết thuật toán và mô phỏng">
+      <!-- CODE AREA -->
+      <section class="code-card" aria-label="Viết thuật toán đệ quy">
+        <div class="code-inner">
+          <div class="code-header">
+            <div>
+              <div class="code-title">
+                <span class="icon">🧑‍💻</span>
+                Viết hàm <code>hanoi(n, from, to, aux, move)</code>
+              </div>
+              <p class="code-mini">
+                Sử dụng đệ quy: <strong>base case</strong> và <strong>recursive case</strong>.
+                Gọi <code>move(from, to)</code> mỗi khi bạn muốn di chuyển <em>1 đĩa</em>.
+              </p>
+            </div>
+            <span class="code-badge">Student mode</span>
+          </div>
+
+          <div class="code-toolbar">
+            <div class="select-row">
+              <span>Chọn số đĩa:</span>
+              <select id="diskCountSelect">
+                <option value="3">3 đĩa (dễ)</option>
+                <option value="4" selected>4 đĩa</option>
+                <option value="5">5 đĩa</option>
+                <option value="6">6 đĩa</option>
+              </select>
+            </div>
+
+            <button id="runBtn" class="btn btn-primary" type="button">
+              <span class="icon">▶️</span>
+              Chạy &amp; đánh giá
+            </button>
+
+            <button id="visualizeBtn" class="btn btn-secondary" type="button" disabled>
+              <span class="icon">🎬</span>
+              Chạy minh họa
+            </button>
+
+            <button id="resetTemplateBtn" class="btn btn-neutral" type="button">
+              <span class="icon">📝</span>
+              Đặt lại mẫu
+            </button>
+          </div>
+
+          <div class="code-editor-wrapper">
+            <div class="code-editor-header">
+              <div class="dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="code-filename">student_hanoi.js</span>
+            </div>
+            <textarea id="codeInput" class="code-editor" spellcheck="false"></textarea>
+          </div>
+
+          <p class="code-hint">
+            Gợi ý: Hàm cần có 5 tham số <code>(n, from, to, aux, move)</code>.
+            Hãy dùng <code>if (n === 1)</code> cho trường hợp cơ sở, ngược lại gọi lại chính nó 3 lần (from → aux, from → to, aux → to).
+          </p>
+        </div>
+      </section>
+
+      <!-- GAME AREA -->
+      <section class="game-card" aria-label="Mô phỏng theo thuật toán của học sinh">
+        <div class="game-header">
+          <div>
+            <div class="game-title">
+              <span class="icon">🧩</span>
+              Minh họa thuật toán của em
+            </div>
+            <p id="gameStatus" class="game-status">
+              Sau khi bấm <strong>“Chạy &amp; đánh giá”</strong>, em có thể bấm
+              <strong>“Chạy minh họa”</strong> để xem các bước di chuyển tương ứng với thuật toán của mình.
+            </p>
+          </div>
+          <div class="status-badges">
+            <div class="badge">
+              Bước sinh ra:
+              <span id="stepsCount" class="value">0</span>
+            </div>
+            <div class="badge badge-muted">
+              Tối thiểu:
+              <span id="minSteps" class="value">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="towers-wrapper">
+          <div class="towers-label-row">
+            <span>Cọc A</span>
+            <span>Cọc B</span>
+            <span>Cọc C</span>
+          </div>
+          <div class="towers" aria-label="Mô phỏng Tháp Hà Nội">
+            <div class="peg">
+              <div id="discs-A" class="discs"></div>
+              <span class="peg-name">A</span>
+            </div>
+            <div class="peg">
+              <div id="discs-B" class="discs"></div>
+              <span class="peg-name">B</span>
+            </div>
+            <div class="peg">
+              <div id="discs-C" class="discs"></div>
+              <span class="peg-name">C</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="evaluationBox" class="evaluation-message">
+          Chưa có đánh giá. Hãy viết hàm và bấm <strong>“Chạy &amp; đánh giá”</strong>.
+        </div>
+
+        <div class="game-bottom-row">
+          <span class="badge badge-warn">
+            Lưu ý: Thuật toán sai &rarr; minh họa cũng sai. Hãy quan sát kết quả và sửa lại code.
+          </span>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    // ==========================
+    // DOM ELEMENTS
+    // ==========================
+    const diskSelect = document.getElementById("diskCountSelect");
+    const codeInput = document.getElementById("codeInput");
+    const runBtn = document.getElementById("runBtn");
+    const visualizeBtn = document.getElementById("visualizeBtn");
+    const resetTemplateBtn = document.getElementById("resetTemplateBtn");
+
+    const discsContainers = {
+      A: document.getElementById("discs-A"),
+      B: document.getElementById("discs-B"),
+      C: document.getElementById("discs-C"),
+    };
+
+    const gameStatus = document.getElementById("gameStatus");
+    const stepsCountSpan = document.getElementById("stepsCount");
+    const minStepsSpan = document.getElementById("minSteps");
+    const evaluationBox = document.getElementById("evaluationBox");
+
+    // ==========================
+    // STATE
+    // ==========================
+    let totalDisks = parseInt(diskSelect.value, 10);
+    let studentMoves = [];
+    let towers = { A: [], B: [], C: [] };
+    let visualTimer = null;
+    let discColors = [
+      "#38bdf8",
+      "#a855f7",
+      "#fb923c",
+      "#22c55e",
+      "#eab308",
+      "#f97373",
+      "#4ade80",
+    ];
+
+    // ==========================
+    // TEMPLATE CODE
+    // ==========================
+    const defaultTemplate = `// Viết hàm hanoi sử dụng đệ quy.
+// Hàm có 5 tham số:
+//   n   : số đĩa
+//   from: cọc nguồn (\"A\", \"B\" hoặc \"C\")
+//   to  : cọc đích
+//   aux : cọc trung gian
+//   move: hàm dùng để thực hiện 1 bước di chuyển: move(from, to)
+function hanoi(n, from, to, aux, move) {
+  // TODO: Viết thuật toán đệ quy của bạn tại đây.
+`;
+
+    function resetTemplate() {
+      codeInput.value = defaultTemplate;
+    }
+
+    // ==========================
+    // RENDER TOWERS
+    // ==========================
+    function resetTowers() {
+      towers = { A: [], B: [], C: [] };
+      for (let i = totalDisks; i >= 1; i--) {
+        towers.A.push(i);
+      }
+      renderTowers();
+    }
+
+    function renderTowers() {
+      ["A", "B", "C"].forEach((pegId) => {
+        const container = discsContainers[pegId];
+        container.innerHTML = "";
+        const pegDisks = towers[pegId];
+
+        pegDisks.forEach((discSize) => {
+          const discEl = document.createElement("div");
+          discEl.className = "disc";
+
+          const widthPercent =
+            38 + ((discSize - 1) / Math.max(1, totalDisks - 1)) * 48;
+          discEl.style.width = widthPercent + "%";
+
+          const color = discColors[(discSize - 1) % discColors.length];
+          discEl.style.background = `linear-gradient(135deg, ${color}, #0f172a)`;
+
+          const label = document.createElement("span");
+          label.className = "disc-label";
+          label.textContent = discSize;
+          discEl.appendChild(label);
+
+          container.appendChild(discEl);
+        });
+      });
+    }
+
+    function animateLastDisc(pegId) {
+      const container = discsContainers[pegId];
+      const lastDisc = container.lastElementChild;
+      if (!lastDisc) return;
+      lastDisc.classList.add("moving");
+      setTimeout(() => {
+        lastDisc.classList.remove("moving");
+      }, 260);
+    }
+
+    // ==========================
+    // COMPILE STUDENT FUNCTION
+    // ==========================
+    function compileStudentFunction(code) {
+      // Bọc code của học sinh vào một hàm riêng, trả về hàm hanoi
+      const wrapped =
+        '"use strict";\n' +
+        "return (function() {\n" +
+        code +
+        "\n" +
+        "if (typeof hanoi !== 'function') {\n" +
+        "  throw new Error(\"Bạn phải định nghĩa hàm 'hanoi(...)'.\");\n" +
+        "}\n" +
+        "return hanoi;\n" +
+        "})();";
+
+      // new Function sẽ tạo một hàm mà khi gọi sẽ trả về hanoi()
+      const fn = new Function(wrapped);
+      return fn();
+    }
+
+    // ==========================
+    // EVALUATE MOVES (CHECK RULES)
+    // ==========================
+    function evaluateMoves(n, moves) {
+      const towersSim = { A: [], B: [], C: [] };
+      for (let i = n; i >= 1; i--) {
+        towersSim.A.push(i);
+      }
+
+      const violations = [];
+      const validPegs = ["A", "B", "C"];
+
+      moves.forEach((mv, index) => {
+        const step = index + 1;
+        const from = mv.from;
+        const to = mv.to;
+
+        if (!validPegs.includes(from) || !validPegs.includes(to)) {
+          violations.push(
+            `Bước ${step}: cọc '${from}' hoặc '${to}' không hợp lệ (chỉ dùng A, B, C).`
+          );
+        }
+
+        const src = towersSim[from] || [];
+        const dest = towersSim[to] || [];
+        const disc = src.pop();
+
+        if (disc === undefined) {
+          violations.push(`Bước ${step}: lấy đĩa từ cọc rỗng ${from}.`);
+        } else {
+          const topDest = dest[dest.length - 1];
+          if (topDest !== undefined && topDest < disc) {
+            violations.push(
+              `Bước ${step}: đặt đĩa ${disc} lên đĩa nhỏ hơn (${topDest}).`
+            );
+          }
+          dest.push(disc);
+        }
+      });
+
+      const finalSolved =
+        towersSim.A.length === 0 &&
+        towersSim.B.length === 0 &&
+        towersSim.C.length === n;
+
+      const minSteps = Math.pow(2, n) - 1;
+
+      return {
+        violations,
+        finalSolved,
+        steps: moves.length,
+        minSteps,
+      };
+    }
+
+    // ==========================
+    // RUN STUDENT CODE
+    // ==========================
+    function runStudentCode() {
+      if (visualTimer) {
+        clearInterval(visualTimer);
+        visualTimer = null;
+      }
+      totalDisks = parseInt(diskSelect.value, 10);
+      resetTowers();
+
+      const code = codeInput.value;
+      studentMoves = [];
+
+      const moveLimit = 2000;
+      function move(from, to) {
+        // Học sinh gọi move(from, to) mỗi khi muốn di chuyển 1 đĩa
+        if (studentMoves.length >= moveLimit) {
+          throw new Error(
+            "Hàm hanoi tạo quá nhiều bước (>= 2000). Có thể đang lặp vô hạn."
+          );
+        }
+        studentMoves.push({ from, to });
+      }
+
+      let hanoiFn;
+      try {
+        hanoiFn = compileStudentFunction(code);
+      } catch (err) {
+        showEvaluationError(
+          "Lỗi khi biên dịch code: " + (err && err.message ? err.message : err)
+        );
+        studentMoves = [];
+        stepsCountSpan.textContent = "0";
+        minStepsSpan.textContent = Math.pow(2, totalDisks) - 1;
+        visualizeBtn.disabled = true;
+        return;
+      }
+
+      try {
+        // Gọi hàm hanoi do học sinh viết
+        hanoiFn(totalDisks, "A", "C", "B", move);
+      } catch (err) {
+        showEvaluationError(
+          "Lỗi khi chạy hàm hanoi: " +
+            (err && err.message ? err.message : err)
+        );
+        studentMoves = [];
+        stepsCountSpan.textContent = "0";
+        minStepsSpan.textContent = Math.pow(2, totalDisks) - 1;
+        visualizeBtn.disabled = true;
+        return;
+      }
+
+      const evalResult = evaluateMoves(totalDisks, studentMoves);
+      stepsCountSpan.textContent = evalResult.steps;
+      minStepsSpan.textContent = evalResult.minSteps;
+
+      // Phân loại & hiển thị kết quả đánh giá
+      if (evalResult.steps === 0) {
+        showEvaluationWarn(
+          "Thuật toán chưa sinh ra bước di chuyển nào. Hãy chắc chắn rằng bạn có gọi <code>move(from, to)</code> bên trong hàm."
+        );
+        visualizeBtn.disabled = true;
+      } else if (evalResult.violations.length > 0) {
+        const first = evalResult.violations[0];
+        showEvaluationWarn(
+          "Thuật toán có bước vi phạm luật (đặt đĩa lớn lên nhỏ hoặc lấy từ cọc rỗng).<br/>" +
+            "Ví dụ: " +
+            first +
+            "<br/>Bạn vẫn có thể bấm <strong>“Chạy minh họa”</strong> để xem thuật toán sai như thế nào."
+        );
+        visualizeBtn.disabled = false;
+      } else if (!evalResult.finalSolved) {
+        showEvaluationWarn(
+          "Thuật toán không đưa toàn bộ đĩa sang cọc C. Hãy kiểm tra lại điều kiện dừng và lời gọi đệ quy.<br/>" +
+            "Bạn có thể bấm <strong>“Chạy minh họa”</strong> để xem thuật toán dừng ở đâu."
+        );
+        visualizeBtn.disabled = false;
+      } else if (
+        evalResult.finalSolved &&
+        evalResult.steps === evalResult.minSteps
+      ) {
+        showEvaluationOk(
+          "Tuyệt vời! Thuật toán của bạn <strong>đúng</strong> và <strong>tối ưu</strong> ("
+            .concat(evalResult.steps, " bước = 2^")
+            .concat(totalDisks, " - 1).")
+        );
+        visualizeBtn.disabled = false;
+      } else {
+        showEvaluationOk(
+          "Thuật toán đã giải được bài toán nhưng chưa tối ưu. " +
+            "Số bước của bạn là <strong>" +
+            evalResult.steps +
+            "</strong>, trong khi tối thiểu là <strong>" +
+            evalResult.minSteps +
+            "</strong>."
+        );
+        visualizeBtn.disabled = false;
+      }
+
+      gameStatus.textContent =
+        "Đã phân tích thuật toán. Bấm “Chạy minh họa” để xem các bước di chuyển tương ứng.";
+    }
+
+    // ==========================
+    // EVALUATION MESSAGE HELPERS
+    // ==========================
+    function showEvaluationError(message) {
+      evaluationBox.classList.remove("ok", "warn");
+      evaluationBox.classList.add("error");
+      evaluationBox.innerHTML = message;
+    }
+
+    function showEvaluationOk(message) {
+      evaluationBox.classList.remove("error", "warn");
+      evaluationBox.classList.add("ok");
+      evaluationBox.innerHTML = message;
+    }
+
+    function showEvaluationWarn(message) {
+      evaluationBox.classList.remove("error", "ok");
+      evaluationBox.classList.add("warn");
+      evaluationBox.innerHTML = message;
+    }
+
+    // ==========================
+    // VISUALIZE MOVES
+    // ==========================
+    function visualizeMoves() {
+      if (!studentMoves || studentMoves.length === 0) {
+        showEvaluationWarn(
+          "Chưa có danh sách bước để minh họa. Hãy chạy thuật toán trước."
+        );
+        return;
+      }
+
+      if (visualTimer) {
+        clearInterval(visualTimer);
+        visualTimer = null;
+      }
+
+      totalDisks = parseInt(diskSelect.value, 10);
+      resetTowers();
+
+      let index = 0;
+      const delay = 600;
+
+      visualTimer = setInterval(() => {
+        if (index >= studentMoves.length) {
+          clearInterval(visualTimer);
+          visualTimer = null;
+          gameStatus.textContent =
+            "Đã chạy xong minh họa. Hãy quan sát trạng thái cuối cùng xem có đúng yêu cầu hay không.";
+          return;
+        }
+
+        const { from, to } = studentMoves[index];
+        performVisualMove(from, to);
+        renderTowers();
+        animateLastDisc(to);
+        index++;
+      }, delay);
+
+      gameStatus.textContent =
+        "Đang chạy minh họa theo thuật toán của bạn. Hãy quan sát các bước di chuyển.";
+    }
+
+    function performVisualMove(fromPeg, toPeg) {
+      const fromStack = towers[fromPeg];
+      const toStack = towers[toPeg];
+
+      if (!fromStack || !toStack) return;
+      const disc = fromStack.pop();
+      if (disc === undefined) return;
+      // Ở chế độ học sinh, cho phép đặt đĩa lớn lên nhỏ (để minh họa thuật toán sai).
+      toStack.push(disc);
+    }
+
+    // ==========================
+    // EVENT LISTENERS
+    // ==========================
+    runBtn.addEventListener("click", runStudentCode);
+    visualizeBtn.addEventListener("click", visualizeMoves);
+    resetTemplateBtn.addEventListener("click", resetTemplate);
+    diskSelect.addEventListener("change", () => {
+      totalDisks = parseInt(diskSelect.value, 10);
+      resetTowers();
+      minStepsSpan.textContent = Math.pow(2, totalDisks) - 1;
+      stepsCountSpan.textContent = "0";
+      evaluationBox.classList.remove("error", "ok", "warn");
+      evaluationBox.textContent =
+        "Đã thay đổi số đĩa. Hãy chạy lại thuật toán của bạn để xem kết quả mới.";
+      visualizeBtn.disabled = true;
+      gameStatus.textContent =
+        "Chọn số đĩa, sau đó bấm “Chạy & đánh giá” để kiểm tra lại thuật toán.";
+    });
+
+    // ==========================
+    // INIT
+    // ==========================
+    function init() {
+      resetTemplate();
+      totalDisks = parseInt(diskSelect.value, 10);
+      resetTowers();
+      minStepsSpan.textContent = Math.pow(2, totalDisks) - 1;
+      stepsCountSpan.textContent = "0";
+      evaluationBox.classList.remove("error", "ok", "warn");
+    }
+
+    init();
+  </script>
+</body>
+</html>
