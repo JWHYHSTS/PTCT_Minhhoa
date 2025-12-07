@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>Tháp Hà Nội – Chế độ GV, HS & Hướng dẫn</title>
+  <title>Tháp Hà Nội – Mô phỏng & Tài liệu học tập</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * {
@@ -77,6 +77,7 @@
       border-radius: 999px;
       padding: 3px;
       align-self: flex-start;
+      flex-wrap: wrap;
     }
     .tab-btn {
       border: none;
@@ -90,7 +91,8 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+      transition: background 0.15s ease, color 0.15s ease,
+        box-shadow 0.15s ease, transform 0.1s ease;
       white-space: nowrap;
     }
     .tab-btn span.icon {
@@ -145,7 +147,8 @@
       <div>
         <h1 class="title">Tháp Hà Nội – Tower of Hanoi</h1>
         <p class="subtitle">
-          Chọn chế độ: Giáo viên minh họa, Học sinh tự viết thuật toán, hoặc xem hướng dẫn &amp; code chuẩn.
+          Chọn chế độ: mô phỏng cho giáo viên, học sinh, xem hướng dẫn &amp; code chuẩn, tải tài liệu đọc
+          hoặc xem video mở đầu bài học.
         </p>
       </div>
       <span class="tagline">Đệ quy trực quan • Tin học 11</span>
@@ -164,6 +167,7 @@
           <span class="icon">👩‍🏫</span>
           Chế độ Giáo viên
         </button>
+
         <button
           class="tab-btn"
           id="tab-student"
@@ -175,6 +179,7 @@
           <span class="icon">🧑‍🎓</span>
           Chế độ Học sinh
         </button>
+
         <button
           class="tab-btn"
           id="tab-guide"
@@ -183,15 +188,41 @@
           aria-selected="false"
           aria-controls="panel-guide"
         >
-          <span class="icon">📘</span>
+          <span class="icon">📗</span>
           Hướng dẫn &amp; Code chuẩn
+        </button>
+
+        <button
+          class="tab-btn"
+          id="tab-material"
+          type="button"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-material"
+        >
+          <span class="icon">📘</span>
+          Tài liệu đọc
+        </button>
+
+        <button
+          class="tab-btn"
+          id="tab-video"
+          type="button"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-video"
+        >
+          <span class="icon">📽</span>
+          Video mở đầu
         </button>
       </div>
 
       <p class="tab-caption">
         • <strong>Chế độ Giáo viên:</strong> mô phỏng đầy đủ Tháp Hà Nội với auto-solve, gợi ý và bảng kiến thức đệ quy.<br />
-        • <strong>Chế độ Học sinh:</strong> học sinh tự viết hàm <code>hanoi(n, from, to, aux, move)</code> và xem minh họa theo thuật toán của mình.<br />
-        • <strong>Hướng dẫn:</strong> giáo viên cho học sinh xem thuật toán chuẩn và mở lại mô phỏng.
+        • <strong>Chế độ Học sinh:</strong> tự viết hàm <code>hanoi(n, from, to, aux, move)</code> và xem mô phỏng theo thuật toán của mình.<br />
+        • <strong>Hướng dẫn &amp; Code chuẩn:</strong> xem lại thuật toán đúng của Tháp Hà Nội và giải thích chi tiết.<br />
+        • <strong>Tài liệu đọc:</strong> tải file PDF <em>“Tháp Hà Nội – Thuật toán lập trình và ứng dụng”</em> để tự học &amp; làm dự án.<br />
+        • <strong>Video mở đầu:</strong> xem video khởi động bài học do giáo viên chuẩn bị bằng AI.
       </p>
 
       <div class="frames">
@@ -218,6 +249,22 @@
           class="frame"
           title="Hướng dẫn &amp; thuật toán chuẩn Tháp Hà Nội"
         ></iframe>
+
+        <!-- IFRAME TÀI LIỆU ĐỌC -->
+        <iframe
+          src="tailieudoc.html"
+          id="panel-material"
+          class="frame"
+          title="Tài liệu đọc – Tháp Hà Nội"
+        ></iframe>
+
+        <!-- IFRAME VIDEO MỞ ĐẦU -->
+        <iframe
+          src="video_mobai.html"
+          id="panel-video"
+          class="frame"
+          title="Video mở đầu bài học – Tháp Hà Nội"
+        ></iframe>
       </div>
     </section>
   </main>
@@ -226,34 +273,48 @@
     const tabTeacher = document.getElementById("tab-teacher");
     const tabStudent = document.getElementById("tab-student");
     const tabGuide = document.getElementById("tab-guide");
+    const tabMaterial = document.getElementById("tab-material");
+    const tabVideo = document.getElementById("tab-video");
 
     const frameTeacher = document.getElementById("panel-teacher");
     const frameStudent = document.getElementById("panel-student");
     const frameGuide = document.getElementById("panel-guide");
+    const frameMaterial = document.getElementById("panel-material");
+    const frameVideo = document.getElementById("panel-video");
 
     function activateTab(type) {
       const isTeacher = type === "teacher";
       const isStudent = type === "student";
       const isGuide = type === "guide";
+      const isMaterial = type === "material";
+      const isVideo = type === "video";
 
       // Toggle active class on buttons
       tabTeacher.classList.toggle("active", isTeacher);
       tabStudent.classList.toggle("active", isStudent);
       tabGuide.classList.toggle("active", isGuide);
+      tabMaterial.classList.toggle("active", isMaterial);
+      tabVideo.classList.toggle("active", isVideo);
 
       tabTeacher.setAttribute("aria-selected", isTeacher ? "true" : "false");
       tabStudent.setAttribute("aria-selected", isStudent ? "true" : "false");
       tabGuide.setAttribute("aria-selected", isGuide ? "true" : "false");
+      tabMaterial.setAttribute("aria-selected", isMaterial ? "true" : "false");
+      tabVideo.setAttribute("aria-selected", isVideo ? "true" : "false");
 
       // Toggle frames
       frameTeacher.classList.toggle("active", isTeacher);
       frameStudent.classList.toggle("active", isStudent);
       frameGuide.classList.toggle("active", isGuide);
+      frameMaterial.classList.toggle("active", isMaterial);
+      frameVideo.classList.toggle("active", isVideo);
     }
 
     tabTeacher.addEventListener("click", () => activateTab("teacher"));
     tabStudent.addEventListener("click", () => activateTab("student"));
     tabGuide.addEventListener("click", () => activateTab("guide"));
+    tabMaterial.addEventListener("click", () => activateTab("material"));
+    tabVideo.addEventListener("click", () => activateTab("video"));
   </script>
 </body>
 </html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tài liệu đọc – Tháp Hà Nội</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: linear-gradient(135deg, #1c2541, #3a506b, #0b132b);
+      color: #f1f5f9;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 900px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 1.6rem;
+      text-align: center;
+    }
+
+    p {
+      text-align: center;
+      opacity: 0.85;
+      margin-bottom: 20px;
+    }
+
+    .preview {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .preview img {
+      width: 60%;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      max-width: 280px;
+      margin: 12px auto;
+      padding: 12px;
+      border-radius: 999px;
+      border: none;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      text-align: center;
+    }
+
+    .btn-download {
+      background: #38bdf8;
+      color: #0f172a;
+    }
+    .btn-download:hover {
+      background: #0ea5e9;
+    }
+
+    .btn-back {
+      background: #64748b;
+      color: white;
+    }
+    .btn-back:hover {
+      background: #475569;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h1>TÀI LIỆU ĐỌC THAM KHẢO</h1>
+  <p>Chuyên đề học tập 11.1 – Tháp Hà Nội, Thuật toán lập trình & Ứng dụng</p>
+
+  <div class="preview">
+    <!-- Ảnh bìa PDF – bạn có thể thay bằng file ảnh thật nếu muốn -->
+    <img src="Tailieudoc_Image.png" alt="Preview PDF">
+  </div>
+
+  <button class="btn btn-download"
+          onclick="window.location.href='06_Tailieudoc.pdf'">
+      📘 Tải xuống tài liệu (PDF)
+  </button>
+</div>
+
+</body>
+</html>
